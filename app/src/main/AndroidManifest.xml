@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.galilea.gitimporter" >
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <provider
+            android:name=".database.CommitsProvider_"
+            android:enabled="true"
+            android:exported="true"
+            android:authorities="com.example.galilea.provider.Commits" />
+
+        <service android:name=".processing.GithubService" >
+        </service>
+
+        <activity
+            android:name=".LookupForm_"
+            android:label="@string/title_activity_lookup"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CommitListActivity_"
+            android:label="@string/title_activity_commit_list" >
+        </activity>
+
+    </application>
+
+</manifest>

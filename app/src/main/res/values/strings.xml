@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GitImporter</string>
+    <string name="title_activity_commit_list">CommitListActivity</string>
+    <string name="title_activity_lookup">LookupActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="db_name">commits.db</string>
+</resources>

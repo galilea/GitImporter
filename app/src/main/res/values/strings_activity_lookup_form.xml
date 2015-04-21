@@ -1,0 +1,13 @@
+<resources>
+
+    <!-- Strings related to login -->
+    <string name="prompt_owner">Owner</string>
+    <string name="prompt_repo">Repo</string>
+    <string name="action_search">Search</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="error_invalid_owner">This owner name is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_repo">This repo is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+</resources>
