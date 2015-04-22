@@ -10,11 +10,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.example.galilea.gitimporter.SimpleCommit;
 import com.example.galilea.gitimporter.processing.CommitPOJOContainer;
 
 import org.androidannotations.annotations.EProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by galilea on 18.04.2015.
@@ -26,7 +29,7 @@ public class CommitsProvider extends ContentProvider {
     DBHelper dbHelper;
     SQLiteDatabase db;
 
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 6;
 
     private String DB_NAME = "commits.db";
 
@@ -58,16 +61,16 @@ public class CommitsProvider extends ContentProvider {
 
     //// UriMatcher
     // общий Uri
-    static final int URI_CONTACTS = 1;
+    static final int URI_COMMITS = 1;
 
     // Uri с указанным ID
-    static final int URI_CONTACTS_ID = 2;
+    static final int URI_COMMITS_ID = 2;
 
     private static final UriMatcher uriMatcher;
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTHORITY, COMMITS_PATH, URI_CONTACTS);
-        uriMatcher.addURI(AUTHORITY, COMMITS_PATH + "/#", URI_CONTACTS_ID);
+        uriMatcher.addURI(AUTHORITY, COMMITS_PATH, URI_COMMITS);
+        uriMatcher.addURI(AUTHORITY, COMMITS_PATH + "/#", URI_COMMITS_ID);
     }
 
     private static final String DB_CREATE = "create table " + COMMIT_TABLE + "("
@@ -87,14 +90,14 @@ public class CommitsProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
             switch (uriMatcher.match(uri)) {
-                case URI_CONTACTS:
+                case URI_COMMITS:
 
                     if (TextUtils.isEmpty(sortOrder)) {
                         sortOrder = COMMIT_ID + " ASC";
                     }
                     break;
 
-                case URI_CONTACTS_ID: // Uri с ID
+                case URI_COMMITS_ID: // Uri с ID
                     String id = uri.getLastPathSegment();
                     if (TextUtils.isEmpty(selection)) {
                         selection = COMMIT_ID + " = " + id;
@@ -121,7 +124,7 @@ public class CommitsProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if (uriMatcher.match(uri) != URI_CONTACTS)
+        if (uriMatcher.match(uri) != URI_COMMITS)
             throw new IllegalArgumentException("Wrong URI: " + uri);
 
         db = dbHelper.getWritableDatabase();
@@ -130,6 +133,7 @@ public class CommitsProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(resultUri, null);
         return resultUri;
     }
+
 
     public static ContentValues prepare(CommitPOJOContainer cm){
         ContentValues values = new ContentValues();
@@ -144,9 +148,10 @@ public class CommitsProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs){
         switch (uriMatcher.match(uri)) {
-            case URI_CONTACTS:
+            case URI_COMMITS:
+                db.execSQL("DROP TABLE IF EXISTS commits_list");
                 break;
-            case URI_CONTACTS_ID:
+            case URI_COMMITS_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     selection = COMMIT_ID + " = " + id;
@@ -166,9 +171,9 @@ public class CommitsProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         switch (uriMatcher.match(uri)) {
-            case URI_CONTACTS:
+            case URI_COMMITS:
                 break;
-            case URI_CONTACTS_ID:
+            case URI_COMMITS_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     selection = COMMIT_ID + " = " + id;
@@ -195,14 +200,9 @@ public class CommitsProvider extends ContentProvider {
         }
 
         public void onCreate(SQLiteDatabase db) {
+
+            db.execSQL("DROP TABLE IF EXISTS commits_list");
             db.execSQL(DB_CREATE);
-            ContentValues values = new ContentValues();
-            values.put(COMMIT_OWNER, "blabla");
-            values.put(COMMIT_REPO, "blablabla");
-            values.put(COMMIT_DATE, "1212");
-            values.put(COMMIT_MESSAGE, "pffffff");
-            values.put(COMMIT_HASH, "bu");
-            db.insert(COMMIT_TABLE, null, values);
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

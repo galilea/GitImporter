@@ -1,5 +1,8 @@
 package com.example.galilea.gitimporter;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,19 +11,18 @@ import android.widget.TextView;
 
 import com.example.galilea.gitimporter.processing.CommitPOJOContainer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by galilea on 17.02.2015.
  */
 
-public class CommitListAdapter extends RecyclerView.Adapter<CommitListAdapter.ViewHolder> {
-
-    private List<SimpleCommit> items;
+public class CommitListAdapter extends CursorRecyclerViewAdapter<CommitListAdapter.ViewHolder> {
 
 
-    public CommitListAdapter(List<SimpleCommit> newItems){
-        items = newItems;
+    public CommitListAdapter(Context context, Cursor cursor) {
+        super(context, cursor);
     }
 
     @Override
@@ -30,18 +32,11 @@ public class CommitListAdapter extends RecyclerView.Adapter<CommitListAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(CommitListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
+        SimpleCommit comm = SimpleCommit.fromCursor(cursor);
+        viewHolder.setName(comm.author);
+        viewHolder.setMessage(comm.message);
 
-        SimpleCommit i = items.get(position);
-
-        holder.setName(i.author);
-        holder.setMessage(i.message);
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
